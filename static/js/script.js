@@ -41,8 +41,7 @@ var url2 = '/api/project/ros2-foxy-moveit'
 
 const renderAction = (targetDiv, actions, act) => {
   // find action type
-  const div = $("<div>").addClass("dockerific-action")
-  $(targetDiv).append(div)
+  const div = $("<li>").addClass("dockerific-action").appendTo(targetDiv)
   var act_type = null;
   for(var type in actions) {
     if(type in act) {
@@ -86,8 +85,9 @@ const renderDockerific = (targetDiv, schema, data) => {
   const base_image = data.base
   const actions = data.build
   console.log("Base image:", base_image)
+  const outerdiv = $("<ul>").addClass("dockerific-actions").appendTo(targetDiv)
   actions.forEach((a) => {
-    renderAction(targetDiv, schemaFields, a)
+    renderAction(outerdiv, schemaFields, a)
   })
 }
 
