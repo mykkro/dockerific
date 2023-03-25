@@ -47,19 +47,18 @@ if __name__ == "__main__":
         @staticmethod
         def validate_type(value, type):
             if type == "string" and isinstance(value, str):
-                return True
+                return None
             if type == "string_list":
                 for item in value:
-                    if not DockerificValidator.validate_type(item, "string"):
-                        print("Type validation failed:", value, type)
-                        return False
-                return True
+                    errors = DockerificValidator.validate_type(item, "string")
+                    if errors is not None:
+                        return errors + [f"Type validation failed: {value} {type}"]
+                return None
             if type == "int" and isinstance(value, int):
-                return True
+                return None
             if type == "bool" and isinstance(value, bool):
-                return True
-            print("Type validation failed:", value, type)
-            return False
+                return None
+            return [f"Type validation failed: {value} {type}"]
 
         @staticmethod
         def validate_prop(act, prop):
@@ -69,29 +68,24 @@ if __name__ == "__main__":
             prop_default = prop.get("default")
             prop_value = act.get(prop_key, prop_default)
             if not prop_required and prop_value is None:
-                return True
-            print(prop_key, prop_required, prop_type, prop_value)
+                return None
+            print(" ", prop_key, prop_required, prop_type, prop_value)
             assert(not prop_required or prop_value is not None)
-            if not DockerificValidator.validate_type(prop_value, prop_type):
-                print("Type validation failed for field:", prop_key)     
-                return False   
-            return True    
+            errors = DockerificValidator.validate_type(prop_value, prop_type)
+            if errors is not None:
+                return errors + [f"Type validation failed for field: {prop_key}"]
+            return None    
 
         @staticmethod
         def validate_action(act, schema):
-            print("Validating action against schema...")
-            schema_title = schema.get("title") 
-            schema_description = schema.get("description") 
-            title = act.get("title") # every action can have a Title
             for prop in schema["props"]:
-                if not DockerificValidator.validate_prop(act, prop):
-                    print("Action validation failed:", act)
-                    return False
-            return True
+                errors = DockerificValidator.validate_prop(act, prop)
+                if errors is not None:
+                    return errors
+            return None
 
 
         def validate_dockerific_data(self, raw):
-            print("Validating data against schema...")
             assert(self.schema["$type"] == "cz.mykkro.dockerific.schema")
             assert(raw["$type"] == "cz.mykkro.dockerific")
             assert(self.schema["$version"] == raw["$version"])
@@ -101,13 +95,16 @@ if __name__ == "__main__":
             for act in raw["build"]:
                 type = self.determine_action_type(act, action_keys)
                 if type is None:
-                    print("Invalid action - no type recognized", act, action_keys)
-                    return False
-                
-                if not self.validate_action(act, actions[type]):
-                    return False
+                    return [f"Invalid action - no type recognized {act} {action_keys}"]
+
+                print("Action:", type, act.get("title"))
+
+                errors = self.validate_action(act, actions[type])
+                if errors is not None:
+                    return errors
             
-            return True
+            return None
 
     dv = DockerificValidator(schema)
-    dv.validate_dockerific_data(raw)
+    errors = dv.validate_dockerific_data(raw)
+    print(errors)
