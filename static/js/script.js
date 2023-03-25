@@ -39,8 +39,42 @@ const loadJson = (url, done) => {
 var url1 = '/api/schema'
 var url2 = '/api/project/ros2-foxy-moveit'
 
+const renderAction = (targetDiv, actions, act) => {
+  // find action type
+  var act_type = null;
+  for(var type in actions) {
+    if(type in act) {
+      act_type = type
+      break
+    }
+  }
+  const actionSchema = actions[act_type]
+  const actionTitle = actionSchema.title
+  const actionProps = actionSchema.props || []
+  console.log('Action type:', actionTitle)
+  actionProps.forEach((p) => {
+    const propKey = p.key
+    const propDefault = p.default
+    const propValue = act[p.key] || propDefault
+    console.log("Prop:", propKey, propValue, p.type, p.is_list || false, p.required)
+  })
+}
+
+const renderDockerific = (targetDiv, schema, data) => {
+  const schemaFields = schema.build_actions
+  console.log("Rendering Dockerific!")
+  console.log("Schema fields:", schemaFields)
+  console.log("Data:", data)
+  const base_image = data.base
+  const actions = data.build
+  console.log("Base image:", base_image)
+  actions.forEach((a) => {
+    renderAction(targetDiv, schemaFields, a)
+  })
+}
+
 loadJson(url1, (schema) => {
   loadJson(url2, (data) => {
-    console.log(schema, data)
+    renderDockerific("#dockerific", schema, data)
   })
 })
