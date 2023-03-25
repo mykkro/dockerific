@@ -291,7 +291,7 @@ class DockerificRenderer(object):
 
 
 
-
+# TODO deprecated
 def load_dockerific_project(project_path):
 
     with open(f"{project_path}/dockerific.yaml", 'r', encoding="utf-8") as infile:

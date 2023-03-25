@@ -37,7 +37,6 @@ const loadJson = (url, done) => {
 }
   
 var url1 = '/api/schema'
-var url2 = '/api/project/ros2-foxy-moveit'
 
 const displayBoolField = (value) => {
   return $('<input type="checkbox">').prop("checked", value)
@@ -110,6 +109,22 @@ const renderDockerific = (targetDiv, schema, data) => {
   const titleDiv = $("<div>").addClass("dockerific-title").appendTo(targetDiv).text(data.title)
   const descriptionDiv = $("<div>").addClass("dockerific-description").appendTo(targetDiv).text(data.description)
   const baseImageDiv = $("<div>").addClass("dockerific-baseimage").appendTo(targetDiv).text(base_image)
+  const generateButton = $("<button>").addClass("dockerific-generate-btn").appendTo(targetDiv).text("Generate Dockerfile").click(() => {
+    $.ajax({
+      url: generateUrl,
+      dataType: 'json',
+      method: 'POST',
+      success: function(data) {
+        // Code to handle the loaded JSON data goes here
+        console.log("Generated!", data)
+        alert('Generated!')
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log('Error loading JSON file:', textStatus, errorThrown);
+      }
+    });
+  })
+  const dockerfileLink = $("<a>").addClass("dockerific-dockerfile-link").attr("href", dockerfileUrl).attr("target", "_blank").appendTo(targetDiv).text("Dockerfile")
   const outerdiv = $("<ul>").addClass("dockerific-actions").appendTo(targetDiv)
   var index = 1
   actions.forEach((a) => {

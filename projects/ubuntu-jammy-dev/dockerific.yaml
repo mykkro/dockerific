@@ -1,0 +1,54 @@
+---
+$type: cz.mykkro.dockerific
+$version: "1.0"
+name: ubuntu-jammy-dev
+version: "1.0"
+title: Simplest Ubuntu Dockerfile
+description: N/A
+base:  python:3.9-slim
+build:
+  - apt: true
+    title: Basic Packages install
+    pkgs:
+      - build-essential
+      - curl
+      - gnupg
+      - lsb-release
+      - git
+      - apt-utils
+      - python3-dev
+      - python3-distutils
+      - python3-pip
+      - unzip
+      - sudo
+      - wget
+      - software-properties-common
+      - vim
+      - figlet
+      - toilet
+      - mc
+      - featherpad
+      - dos2unix
+      - tmux
+      - libpoco-dev
+      - libeigen3-dev
+  - workdir: /app
+    value: "3.0"
+  - put:
+    to: requirements.txt
+    contents: |
+      numpy
+      pandas
+  - put:
+    to: sample.py
+    contents: |
+      import numpy as np
+      print(np.arange(5))
+  - copy: 
+    src: sample.py
+    tgt: .
+  - copy: 
+    src: requirements.txt
+    tgt: .
+  - run: pip install -r requirements.txt
+  - bash: null
