@@ -44,3 +44,8 @@
     font-weight: 300;
     margin: 2em;
   }
+
+  .dockerify-prop-value, .dockerify-prop-list-value {
+    font-family: monospace;
+    white-space: pre;
+  }

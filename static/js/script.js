@@ -41,6 +41,8 @@ var url2 = '/api/project/ros2-foxy-moveit'
 
 const renderAction = (targetDiv, actions, act) => {
   // find action type
+  const div = $("<div>").addClass("dockerific-action")
+  $(targetDiv).append(div)
   var act_type = null;
   for(var type in actions) {
     if(type in act) {
@@ -52,12 +54,28 @@ const renderAction = (targetDiv, actions, act) => {
   const actionTitle = actionSchema.title
   const actionProps = actionSchema.props || []
   console.log('Action type:', actionTitle)
+  div.append($("<h2>").text(actionTitle))
+  const propsDiv = $("<ul>").addClass("dockerify-props").appendTo(div)
   actionProps.forEach((p) => {
+    const propDiv = $("<li>").addClass("dockerify-prop").appendTo(propsDiv)
     const propKey = p.key
     const propDefault = p.default
-    const propValue = act[p.key] || propDefault
-    console.log("Prop:", propKey, propValue, p.type, p.is_list || false, p.required)
+    const propIsList = p.list || false
+    const propTypeStr = p.type + (!propIsList) ? "" : " list"
+    propDiv.append($("<h3>").text(propKey))
+    propDiv.append($("<div>").addClass("dockerify-prop-type").text(propTypeStr))
+    if(propIsList) {
+      const propListValue = act[p.key] || propDefault
+      propListValue.forEach((it) => {
+        propDiv.append($("<div>").addClass("dockerify-prop-list-value").text(it))
+      })
+    } 
+    else {
+      const propValue = act[p.key] || propDefault
+      propsDiv.append($("<div>").addClass("dockerify-prop-value").text(propValue))
+      }
   })
+  return div
 }
 
 const renderDockerific = (targetDiv, schema, data) => {
