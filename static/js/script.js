@@ -39,9 +39,8 @@ const loadJson = (url, done) => {
 var url1 = '/api/schema'
 var url2 = '/api/project/ros2-foxy-moveit'
 
-const renderAction = (targetDiv, actions, act) => {
+const renderAction = (targetDiv, actions, act, index) => {
   // find action type
-  const div = $("<li>").addClass("dockerific-action").appendTo(targetDiv)
   var act_type = null;
   for(var type in actions) {
     if(type in act) {
@@ -49,10 +48,12 @@ const renderAction = (targetDiv, actions, act) => {
       break
     }
   }
+  const div = $("<li>").addClass("dockerific-action").addClass("action-"+act_type).appendTo(targetDiv)
   const actionSchema = actions[act_type]
   const actionTitle = actionSchema.title
   const actionProps = actionSchema.props || []
   console.log('Action type:', actionTitle)
+  div.append($("<div>").addClass("dockerific-action-number").text("#" + index))
   div.append($("<h2>").text(actionTitle))
   const propsDiv = $("<ul>").addClass("dockerify-props").appendTo(div)
   actionProps.forEach((p) => {
@@ -60,19 +61,20 @@ const renderAction = (targetDiv, actions, act) => {
     const propKey = p.key
     const propDefault = p.default
     const propIsList = p.list || false
-    const propTypeStr = p.type + (!propIsList) ? "" : " list"
-    propDiv.append($("<h3>").text(propKey))
+    const propTypeStr = p.type + (!propIsList ? "" : " list")
     propDiv.append($("<div>").addClass("dockerify-prop-type").text(propTypeStr))
+    propDiv.append($("<h3>").text(propKey))
     if(propIsList) {
       const propListValue = act[p.key] || propDefault
+      const propListDiv = $("<div>").addClass("dockerify-prop-value").appendTo(propDiv)
       propListValue.forEach((it) => {
-        propDiv.append($("<div>").addClass("dockerify-prop-list-value").text(it))
+        propListDiv.append($("<div>").addClass("dockerify-prop-list-value").text(it))
       })
     } 
     else {
       const propValue = act[p.key] || propDefault
-      propsDiv.append($("<div>").addClass("dockerify-prop-value").text(propValue))
-      }
+      propDiv.append($("<div>").addClass("dockerify-prop-value").text(propValue))
+    }
   })
   return div
 }
@@ -85,9 +87,13 @@ const renderDockerific = (targetDiv, schema, data) => {
   const base_image = data.base
   const actions = data.build
   console.log("Base image:", base_image)
+  const titleDiv = $("<div>").addClass("dockerific-title").appendTo(targetDiv).text(data.title)
+  const descriptionDiv = $("<div>").addClass("dockerific-description").appendTo(targetDiv).text(data.description)
+  const baseImageDiv = $("<div>").addClass("dockerific-baseimage").appendTo(targetDiv).text(base_image)
   const outerdiv = $("<ul>").addClass("dockerific-actions").appendTo(targetDiv)
+  var index = 1
   actions.forEach((a) => {
-    renderAction(outerdiv, schemaFields, a)
+    renderAction(outerdiv, schemaFields, a, index++)
   })
 }
 

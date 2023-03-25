@@ -45,7 +45,79 @@
     margin: 2em;
   }
 
+ #dockerific h3 {
+  margin-top: 0;
+  padding-top: 0;
+ }
+
+ #dockerific h2 {
+  margin-top: 0;
+  padding-top: 0;
+ }
+
   .dockerify-prop-value, .dockerify-prop-list-value {
     font-family: monospace;
     white-space: pre;
   }
+
+  .dockerify-prop {
+    display: grid;
+    grid-template-columns: 100px 100px 300px;
+  }
+
+  .dockerify-prop-type {
+    text-align: right;
+    padding-right: 8px;
+  }
+
+  .dockerify-props {
+    display: grid;
+  }
+
+  .dockerific-action {
+    display: grid;
+    grid-template-columns: 40px 100px 500px;
+    margin: 2px;
+    padding: 4px;
+    background-color: azure;
+    border-radius: 6px 6px 6px 6px;
+  }
+
+  .dockerific-actions {
+    display: grid;
+  }
+
+  .action-env {
+    background-color: lightblue;
+  }
+
+  .action-arg {
+    background-color: rgb(137, 130, 197);
+  }
+
+  .action-apt {
+    background-color: rgb(89, 192, 144);
+  }
+  .action-run {
+    background-color: salmon
+  }
+  .action-git {
+    background-color: cyan;
+  }
+  .action-append {
+    background-color: green;
+  }
+  .action-put {
+    background-color: yellow;
+  }
+  .action-copy {
+    background-color: teal
+  }
+  .action-workdir {
+    background-color: orange;
+  }
+  .action-bash {
+    background-color: magenta;
+  }
+  
+  

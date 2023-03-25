@@ -3,6 +3,8 @@ $type: cz.mykkro.dockerific
 $version: "1.0"
 name: ros2-foxy-moveit
 version: "1.0"
+title: ROS2 Foxy with MoveIT2 Docker Image
+description: Based on https://github.com/azalutsky/MoveIt2Docker
 base: ros:foxy
 build:
   - env: DOCKER_IMAGE_VER
