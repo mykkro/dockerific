@@ -21,23 +21,26 @@ $('#tabs-nav li').click(function(){
 
 // load calendar data and create calendar
 // TODO later serve it directly from app.py
-var url = '/calendar/main'
-$.ajax({
-  url: url,
-  dataType: 'json',
-  success: function(data) {
-    // Code to handle the loaded JSON data goes here
-    console.log("Data loaded:", data)
-    renderCalendar("#calendar-main", data)
-  },
-  error: function(jqXHR, textStatus, errorThrown) {
-    console.log('Error loading JSON file:', textStatus, errorThrown);
-  }
-});
 
-const renderCalendar = (divName, data) => {
-  const events = data.events
-  events.forEach((e) => {
-    console.log("Event:", e)
-  })
+const loadJson = (url, done) => {
+  $.ajax({
+    url: url,
+    dataType: 'json',
+    success: function(data) {
+      // Code to handle the loaded JSON data goes here
+      done(data)
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log('Error loading JSON file:', textStatus, errorThrown);
+    }
+  });
 }
+  
+var url1 = '/api/schema'
+var url2 = '/api/project/ros2-foxy-moveit'
+
+loadJson(url1, (schema) => {
+  loadJson(url2, (data) => {
+    console.log(schema, data)
+  })
+})

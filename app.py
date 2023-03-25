@@ -2,6 +2,8 @@
 
 import yaml
 from flask import Flask, render_template, jsonify
+from dockerific import load_dockerific_project, DockerificValidator, DockerificRenderer
+
 
 # https://stackoverflow.com/questions/34667108/ignore-dates-and-times-while-parsing-yaml
 class NoDatesSafeLoader(yaml.SafeLoader):
@@ -36,14 +38,21 @@ def home():
         version = file.read()
     return render_template("base.html", title="Dockerific", version=version)
 
-"""
-@app.route("/calendar/main/")
-def calendar_main():
-    # load static data
-    with open('data/calendar-main.yaml', 'r') as file:
+@app.route("/api/schema")
+def api_schema():
+    dockerific_schema_path = "dockerific.schema.v1.0.yaml"
+    with open(dockerific_schema_path, 'r') as file:
         data = yaml.load(file, Loader=NoDatesSafeLoader)    
     return jsonify(data)
-"""
+
+@app.route("/api/project/<name>")
+def api_project(name):
+    dockerific_project_path = f"projects/{name}"
+    dockerific_yaml_path = f"{dockerific_project_path}/dockerific.yaml"
+    with open(dockerific_yaml_path, 'r') as file:
+        data = yaml.load(file, Loader=NoDatesSafeLoader)    
+    return jsonify(data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
