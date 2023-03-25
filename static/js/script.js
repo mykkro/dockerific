@@ -39,6 +39,26 @@ const loadJson = (url, done) => {
 var url1 = '/api/schema'
 var url2 = '/api/project/ros2-foxy-moveit'
 
+const displayBoolField = (value) => {
+  return $('<input type="checkbox">').prop("checked", value)
+}
+
+const displayStringField = (value, multiline) => {
+  const klass = multiline ? "prop-string-big" : "prop-string"
+  return $('<textarea>').addClass(klass).val(value)
+}
+
+const displayField = (type, value) => {
+  if(type == "bool") {
+    return displayBoolField(value)
+  } else if(type == "string") {
+    const multiline = value ? value.includes("\n") || value.length > 64 : false
+    return displayStringField(value, multiline)
+  } else {
+    return $("<div>").text(value)
+  }
+}
+
 const renderAction = (targetDiv, actions, act, index) => {
   // find action type
   var act_type = null;
@@ -68,12 +88,12 @@ const renderAction = (targetDiv, actions, act, index) => {
       const propListValue = act[p.key] || propDefault
       const propListDiv = $("<div>").addClass("dockerify-prop-value").appendTo(propDiv)
       propListValue.forEach((it) => {
-        propListDiv.append($("<div>").addClass("dockerify-prop-list-value").text(it))
+        propListDiv.append($("<div>").addClass("dockerify-prop-list-value").append(displayField(p.type, it)))
       })
     } 
     else {
       const propValue = act[p.key] || propDefault
-      propDiv.append($("<div>").addClass("dockerify-prop-value").text(propValue))
+      propDiv.append($("<div>").addClass("dockerify-prop-value").append(displayField(p.type, propValue)))
     }
   })
   return div

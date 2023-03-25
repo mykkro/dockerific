@@ -65,6 +65,10 @@
     grid-template-columns: 100px 100px 300px;
   }
 
+  .dockerify-prop, .dockerify-prop div, .dockerify-prop h3 {
+    margin: 0;
+  }
+
   .dockerify-prop-type {
     text-align: right;
     padding-right: 8px;
@@ -85,6 +89,18 @@
 
   .dockerific-actions {
     display: grid;
+  }
+
+  .prop-string {
+    background-color: rgba(0,0,0,0.15);
+    width: 490px;
+    height: 16px;
+  }
+
+  .prop-string-big {
+    background-color: rgba(0,0,0,0.15);
+    width: 490px;
+    height: 150px;
   }
 
   .action-env {

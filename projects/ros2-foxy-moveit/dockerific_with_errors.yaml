@@ -81,6 +81,7 @@ build:
     to: $HOME/$ROS2_WORKSPACE/src/moveit2_tutorials
     branch: $ROS_DISTRO
     depth: 1
+    recursive: true
   - run: cd $HOME/$ROS2_WORKSPACE/src && vcs import <
       $HOME/$ROS2_WORKSPACE/src/moveit2_tutorials/moveit2_tutorials.repos &&
       rosdep update && rosdep install -r --ignore-src --rosdistro $ROS_DISTRO
