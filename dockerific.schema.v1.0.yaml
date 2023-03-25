@@ -27,7 +27,8 @@ build_actions:
     description: Install packages via apt
     props:
       - key: pkgs
-        type: string_list
+        type: string
+        list: true
         required: true
       - key: upgrade
         type: bool
@@ -69,7 +70,8 @@ build_actions:
         type: string
         required: true
       - key: add
-        type: string_list
+        type: string
+        list: true
         required: true
 
   put: 

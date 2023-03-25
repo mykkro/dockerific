@@ -177,6 +177,121 @@ class Dockerific(object):
         return f"docker build -t \"{self.name}:v{self.version}\" ."
 
 
+
+# schema can be used for validating the raw YAML data
+class DockerificValidator(object):
+    def __init__(self, schema):
+        self.schema = schema
+
+    @staticmethod
+    def determine_action_type(act, action_keys):
+        for key in action_keys:
+            if key in act:
+                return key
+        return None
+
+    @staticmethod
+    def validate_type(value, type, is_list=False):
+        errors = []
+        if is_list:
+            for item in value:
+                errors += DockerificValidator.validate_type(item, type, is_list=False)
+            return errors
+        if type == "string" and isinstance(value, str):
+            return []
+        if type == "int" and isinstance(value, int):
+            return []
+        if type == "bool" and isinstance(value, bool):
+            return []
+        return errors + [f"Type validation failed: {value} {type}"]
+
+    @staticmethod
+    def validate_prop(act, prop):
+        prop_key = prop["key"]
+        prop_required = prop.get("required", False)
+        prop_type = prop["type"]
+        prop_default = prop.get("default")
+        prop_value = act.get(prop_key, prop_default)
+        if not prop_required and prop_value is None:
+            return []
+        print(" ", prop_key, prop_required, prop_type, prop_value)
+        errors = []
+        if prop_required and prop_value is None:
+            return [f"Required prop missing: {prop_key}"]
+        errors += DockerificValidator.validate_type(prop_value, prop_type, is_list=prop.get("list", False))
+        return errors
+
+    @staticmethod
+    def validate_action(act, schema):
+        errors = []
+        for prop in schema["props"]:
+            errors += DockerificValidator.validate_prop(act, prop)
+        return errors
+
+    def validate_dockerific_data(self, raw):
+        assert(self.schema["$type"] == "cz.mykkro.dockerific.schema")
+        assert(raw["$type"] == "cz.mykkro.dockerific")
+        assert(self.schema["$version"] == raw["$version"])
+        actions = self.schema["build_actions"]
+        action_keys = set(actions.keys())
+        errors = []
+        for act in raw["build"]:
+            type = self.determine_action_type(act, action_keys)
+            if type is None:
+                errors += [f"Invalid action - no type recognized {act} {action_keys}"]
+                continue
+
+            print("Action:", type, act.get("title"))
+
+            errors += self.validate_action(act, actions[type])
+        
+        return errors
+
+class DockerificRenderer(object):
+    def __init__(self, schema):
+        self.schema = schema
+
+    @staticmethod
+    def render_typed_value(value, type, is_list=False):
+        if type == "    string" and isinstance(value, str):
+            print("string", value)
+        elif is_list:
+            for item in value:
+                DockerificRenderer.render_typed_value(item, type, is_list=False)
+        elif type == "int" and isinstance(value, int):
+            print("    int", value)
+        elif type == "bool" and isinstance(value, bool):
+            print("    bool", value)
+        else:
+            print(f"    {type} {value}")
+
+    @staticmethod
+    def render_prop(act, prop):
+        prop_key = prop["key"]
+        prop_required = prop.get("required", False)
+        prop_is_list = prop.get("list", False)
+        prop_type = prop["type"]
+        prop_default = prop.get("default")
+        prop_value = act.get(prop_key, prop_default)
+        print("  Property:", prop_key, prop_type, prop_required, prop_is_list)
+        DockerificRenderer.render_typed_value(prop_value, prop_type, is_list=prop_is_list)
+
+    @staticmethod
+    def render_action(act, schema):
+        for prop in schema["props"]:
+            DockerificRenderer.render_prop(act, prop)
+
+    def render_dockerific_data(self, raw):
+        actions = self.schema["build_actions"]
+        action_keys = set(actions.keys())
+        for act in raw["build"]:
+            type = DockerificValidator.determine_action_type(act, action_keys)
+            print("Action:", type, act.get("title"))
+            self.render_action(act, actions[type])
+
+
+
+
 def load_dockerific_project(project_path):
 
     with open(f"{project_path}/dockerific.yaml", 'r', encoding="utf-8") as infile:
