@@ -1,0 +1,116 @@
+$type: cz.mykkro.dockerific.schema
+$version: "1.0"
+build_actions:
+  env: 
+    title: ENV
+    description: Set environment variable used in the container
+    props:
+      - key: env
+        type: string
+        required: true
+      - key: value
+        type: string
+        required: true
+  arg: 
+    title: ARG
+    description: Set environment variable used during build
+    props:
+      - key: arg
+        type: string
+        required: true
+      - key: value
+        type: string
+        required: true
+
+  apt: 
+    title: APT
+    description: Install packages via apt
+    props:
+      - key: pkgs
+        type: string_list
+        required: true
+      - key: upgrade
+        type: bool
+        default: false
+
+  run: 
+    title: RUN
+    description: Run a command.
+    props:
+      - key: run
+        type: string
+        required: true
+
+  git: 
+    title: GIT
+    description: Clone a repo from Git.
+    props:
+      - key: git
+        type: string
+        required: true
+      - key: to
+        type: string
+        required: true
+      - key: branch
+        type: string
+        required: false
+      - key: depth
+        type: int
+        required: false
+      - key: recursive
+        type: bool
+        default: false
+
+  append: 
+    title: APPEND
+    description: Append stuff to a file.
+    props:
+      - key: to
+        type: string
+        required: true
+      - key: add
+        type: string_list
+        required: true
+
+  put: 
+    title: PUT
+    description: Create a local text file.
+    props:
+      - key: to
+        type: string
+        required: true
+      - key: contents
+        type: string
+        required: true
+
+  copy: 
+    title: COPY
+    description: Copy a local file inside the container.
+    props:
+      - key: src
+        type: string
+        required: true
+      - key: tgt
+        type: string
+        required: true
+
+  workdir: 
+    title: WORKDIR
+    description: Change current directory during build.
+    props:
+      - key: workdir
+        type: string
+        required: true
+
+  comment: 
+    title: COMMENT
+    description: A comment generrtated in the Dockerfile.
+    props:
+      - key: comment
+        type: string
+        required: true
+
+  bash: 
+    title: BASH
+    description: Run BASH.
+    props: []
